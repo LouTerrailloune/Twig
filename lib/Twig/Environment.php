@@ -115,6 +115,7 @@ class Twig_Environment
         $this->visitors = array();
         $this->unaryOperators = array();
         $this->binaryOperators = array();
+        $this->staging = array();
 
         $this->addExtension(new Twig_Extension_Core());
         $this->addExtension(new Twig_Extension_Escaper($options['autoescape']));
@@ -848,11 +849,20 @@ class Twig_Environment
     /**
      * Registers a Filter.
      *
-     * @param string               $name   The filter name
-     * @param Twig_FilterInterface $filter A Twig_FilterInterface instance
+     * @param string|Twig_SimpleFilter               $name   The filter name or a Twig_SimpleFilter instance
+     * @param Twig_FilterInterface|Twig_SimpleFilter $filter A Twig_FilterInterface instance or a Twig_SimpleFilter instance
      */
-    public function addFilter($name, Twig_FilterInterface $filter)
+    public function addFilter($name, $filter = null)
     {
+        if ($name instanceof Twig_SimpleFilter) {
+            $filter = $name;
+            $name = $filter->getName();
+        } elseif ($filter instanceof Twig_SimpleFilter) {
+            $name = $filter->getName();
+        } elseif (!$filter instanceof Twig_FilterInterface) {
+            throw new LogicException('...');
+        }
+
         $this->filters[$name] = $filter;
     }
 
@@ -916,11 +926,20 @@ class Twig_Environment
     /**
      * Registers a Test.
      *
-     * @param string             $name The test name
-     * @param Twig_TestInterface $test A Twig_TestInterface instance
+     * @param string|Twig_SimpleTest             $name The test name or a Twig_SimpleTest instance
+     * @param Twig_TestInterface|Twig_SimpleTest $test A Twig_TestInterface instance or a Twig_SimpleTest instance
      */
-    public function addTest($name, Twig_TestInterface $test)
+    public function addTest($name, $test = null)
     {
+        if ($name instanceof Twig_SimpleTest) {
+            $test = $name;
+            $name = $test->getName();
+        } elseif ($test instanceof Twig_SimpleTest) {
+            $name = $test->getName();
+        } elseif (!$test instanceof Twig_TestInterface) {
+            throw new LogicException('...');
+        }
+
         $this->tests[$name] = $test;
     }
 
@@ -937,11 +956,20 @@ class Twig_Environment
     /**
      * Registers a Function.
      *
-     * @param string                 $name     The function name
-     * @param Twig_FunctionInterface $function A Twig_FunctionInterface instance
+     * @param string|Twig_SimpleFunction                 $name     The function name or a Twig_SimpleFunction instance
+     * @param Twig_FunctionInterface|Twig_SimpleFunction $function A Twig_FunctionInterface instance or a Twig_SimpleFunction instance
      */
-    public function addFunction($name, Twig_FunctionInterface $function)
+    public function addFunction($name, $function = null)
     {
+        if ($name instanceof Twig_SimpleFunction) {
+            $function = $name;
+            $name = $function->getName();
+        } elseif ($function instanceof Twig_SimpleFunction) {
+            $name = $function->getName();
+        } elseif (!$function instanceof Twig_FunctionInterface) {
+            throw new LogicException('...');
+        }
+
         $this->functions[$name] = $function;
     }
 
